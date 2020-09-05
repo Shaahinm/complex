@@ -11,21 +11,20 @@ const Fib = () => {
     fetchIndexes();
   }, []);
 
-  fetchValues = async () => {
+  const fetchValues = async () => {
     const values = await axios.get("/api/values/current");
     setValues(values);
   };
 
-  fetchIndexes = async () => {
+  const fetchIndexes = async () => {
     const seenIndexes = await axios.get("/api/values/all");
     setSeenIndex(seenIndexes);
   };
-
-  renderSeenIndexes = () => {
+  const renderSeenIndexes = () => {
     return seenIndex.map(({ number }) => number).join(", ");
   };
 
-  renderCalculatedValues = () => {
+  const renderCalculatedValues = () => {
     const entries = [];
     for (const key in values) {
       if (values.hasOwnProperty(key)) {
@@ -40,7 +39,7 @@ const Fib = () => {
     return entries;
   };
 
-  handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     await axios.post("/api/values", {
       index,
