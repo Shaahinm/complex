@@ -2,7 +2,7 @@ const keys = require("./keys");
 
 // express
 const express = require("express");
-const bodyParser = require("body_parser");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
@@ -19,13 +19,11 @@ const pgClient = new Pool({
   password: keys.pgPassword,
   port: keys.pgPort,
 });
-
-pgClient.on("error", () => console.log("Lost PG connection"));
-
-pgClient
-  .query("CREATE TABLE IF NOT EXISTS VALUES (number INT)")
-  .catch((err) => console.log(err));
-
+pgClient.on("connect", () => {
+  pgClient
+    .query("CREATE TABLE IF NOT EXISTS values (number INT)")
+    .catch((err) => console.log(err));
+});
 // redis
 const redis = require("redis");
 const redisClient = redis.createClient({
@@ -66,4 +64,4 @@ app.post("/values", async (req, res) => {
   res.send({ working: true });
 });
 
-app.listen(5000, err => console.log('Listening on 5000'))
+app.listen(5000, (err) => console.log("Listening on 5000"));
