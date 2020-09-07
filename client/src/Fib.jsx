@@ -13,22 +13,22 @@ const Fib = () => {
 
   const fetchValues = async () => {
     const values = await axios.get("/api/values/current");
-    setValues(values);
+    console.log(values)
+    setValues(values.data);
   };
 
   const fetchIndexes = async () => {
     const seenIndexes = await axios.get("/api/values/all");
-    setSeenIndex(seenIndexes);
+    setSeenIndex(seenIndexes.data);
   };
   const renderSeenIndexes = () => {
     return seenIndex.map(({ number }) => number).join(", ");
   };
 
-  const renderCalculatedValues = () => {
+  const renderCalculatedValues = () => {            
     const entries = [];
     for (const key in values) {
-      if (values.hasOwnProperty(key)) {
-        const element = values[key];
+      if (values.hasOwnProperty(key)) {        
         entries.push(
           <div key={key}>
             For index {key} I calculated {values[key]}
@@ -40,9 +40,9 @@ const Fib = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault();    
     await axios.post("/api/values", {
-      index,
+      index: parseInt(index),
     });
 
     setIndex("");

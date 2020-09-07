@@ -1,15 +1,56 @@
 version: "3"
 services:
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "3050:80"
   postgres:
     image: "postgres:latest"
     environment:
       - POSTGRES_PASSWORD=postgres_password
   redis:
     image: "redis:latest"
-  server:
+  api:
     build:
       dockerfile: Dockerfile.dev
       context: ./server
+    depends_on:
+      - postgres
     volumes:
       - /app/node_modules # this means leave this folder alone, dont overwrite it, dont do anything with it
       - ./server:/app
+    # 2 way to define env variables
+    # 1 -> varianleName=value
+    # sets a variable in the container at RUN TIME (run time means), the varianle is not encoded into the image
+    # only when the container is being created the variable is set up
+    # 2 -> variableName
+    # value is taken from your computer at run time
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379 # this value should be read from the official image, (EXPOSE)
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
