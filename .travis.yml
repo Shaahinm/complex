@@ -2,23 +2,23 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker build -t aviano/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t shaahinm/react-test -f ./client/Dockerfile.dev ./client
   # every project that needs testing, should go here like the one above (aviano/myotherproject)
 
 script: # if any of the following scripts exit with status code other than 0, travis assumes our build failed
   # cont from line 6 -> docker run aviano/myotherproject run test command
-  - docker run -e CI=true aviano/react-test npm run test -- --coverage
+  - docker run -e CI=true shaahinm/react-test npm run test -- --coverage
 
 # after successful tests, create a production image of each of the projects
 after_success:
-  - docker build -t aviano/multi-client ./client # omit -f since it finds Dockerfile by default
-  - docker build -t aviano/multi-nginx ./nginx
-  - docker build -t aviano/multi-server ./server
-  - docker build -t aviano/multi-worker ./worker
+  - docker build -t shaahinm/multi-client ./client # omit -f since it finds Dockerfile by default
+  - docker build -t shaahinm/multi-nginx ./nginx
+  - docker build -t shaahinm/multi-server ./server
+  - docker build -t shaahinm/multi-worker ./worker
   # Log in to docker cli (the username and password are read from travic-ci.com (in project settings, environment variables))
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # take these images and push to docker hub
-  - docker push aviano/multi-client
-  - docker push aviano/multi-nginx
-  - docker push aviano/multi-server
-  - docker push aviano/multi-worker  
+  - docker push shaahinm/multi-client
+  - docker push shaahinm/multi-nginx
+  - docker push shaahinm/multi-server
+  - docker push shaahinm/multi-worker  
